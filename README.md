@@ -30,11 +30,14 @@ chmod +x /scripts/gateway.php
 
 ### 🔧 3. Configurar o Zabbix Agent no pfSense
 
-Adicione ao final do arquivo `/usr/local/etc/zabbix6/zabbix_agentd.conf`:
+# Adicione o arquivo `/usr/local/etc/zabbix6/zabbix_agentd.conf`:
 
-```conf
-UserParameter=gateway.discovery,php -q /scripts/gateway.php discovery
-UserParameter=gateway.status[*],php -q /scripts/gateway.php $1 $2
+# No final do arquivo zabbix_agentd.conf você deve especificar qual o nome da interface que utiliza no pfsense de acordo com a sua interface. 
+
+```bash
+UserParameter=test.gateway.status.PORTA2,/usr/local/bin/php -q /scripts/gateway.php PORTA2 status
+UserParameter=test.gateway.status.PORTA6,/usr/local/bin/php -q /scripts/gateway.php PORTA6 status
+UserParameter=test.gateway.status.LAN,/usr/local/bin/php -q /scripts/gateway.php LAN status
 ```
 
 E reinicie o agente:
