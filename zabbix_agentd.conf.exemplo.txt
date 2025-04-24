@@ -1,0 +1,2 @@
+UserParameter=gateway.discovery,php -q /scripts/gateway.php discovery
+UserParameter=gateway.status[*],php -q /scripts/gateway.php $1 $2
