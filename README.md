@@ -30,7 +30,7 @@ chmod +x /scripts/gateway.php
 
 ### 🔧 3. Configurar o Zabbix Agent no pfSense
 
-Adicione ao final do arquivo `/usr/local/etc/zabbix_agentd.conf`:
+Adicione ao final do arquivo `/usr/local/etc/zabbix6/zabbix_agentd.conf`:
 
 ```conf
 UserParameter=gateway.discovery,php -q /scripts/gateway.php discovery

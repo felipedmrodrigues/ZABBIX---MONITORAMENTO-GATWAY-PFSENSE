@@ -1,2 +1,11 @@
-UserParameter=gateway.discovery,php -q /scripts/gateway.php discovery
-UserParameter=gateway.status[*],php -q /scripts/gateway.php $1 $2
+LogFile=/var/log/zabbix/zabbix_agentd.log
+Server=10.0.0.16
+ServerActive=10.0.0.16
+Hostname=Pfsense_MarinaPark
+
+UserParameter=gateway.discovery,/usr/local/bin/php -q /scripts/gateway.php discovery
+UserParameter=gateway.status[*],/usr/local/bin/php -q /scripts/gateway.php $1 $2
+UserParameter=test.gateway.status,echo 123
+UserParameter=test.gateway.status.PORTA2,/usr/local/bin/php -q /scripts/gateway.php PORTA2 status
+UserParameter=test.gateway.status.PORTA6,/usr/local/bin/php -q /scripts/gateway.php PORTA6 status
+UserParameter=test.gateway.status.LAN,/usr/local/bin/php -q /scripts/gateway.php LAN status
