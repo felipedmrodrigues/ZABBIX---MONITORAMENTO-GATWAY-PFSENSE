@@ -2,7 +2,9 @@
 <?php
 require_once("/etc/inc/globals.inc");
 require_once("/etc/inc/functions.inc");
+require_once("/etc/inc/gwlb.inc"); 
 require_once("classes/autoload.inc.php");
+
 
 function getGateways() {
     $a_gateways = return_gateways_array();
