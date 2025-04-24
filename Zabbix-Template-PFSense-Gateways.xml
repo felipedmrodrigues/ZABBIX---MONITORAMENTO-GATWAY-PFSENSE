@@ -1,10 +1,55 @@
-<?xml version="1.0" encoding="UTF-8"?>
+#!/usr/local/bin/php
+<?php
+require_once("/etc/inc/globals.inc");
+require_once("/etc/inc/functions.inc");
+require_once("/etc/inc/gwlb.inc"); 
+require_once("classes/autoload.inc.php");
+
+
+function getGateways() {
+    $a_gateways = return_gateways_array();
+    $dados = array();
+    foreach ($a_gateways as $gw) {
+        $dados[] = [
+            '{#NAME}' => strtoupper($gw['name']),
+            '{#GW}'   => strtoupper($gw['gateway']),
+        ];
+    }
+    return $dados;
+}
+
+function getStatusGateways($nome, $item) {
+    $gateways_status = return_gateways_status(true);
+
+    if (empty($nome) || empty($item)) {
+        echo 'ZBX_NOTSUPPORTED';
+        return;
+    }
+
+    if (!isset($gateways_status[$nome][$item])) {
+        echo 'ZBX_NOTSUPPORTED';
+        return;
+    }
+
+    $valor = strtolower($gateways_status[$nome][$item]);
+
+    if ($item == 'status') {
+        switch ($valor) {
+            case 'none':
+            case 'online':
+                echo 1; break;
+            case 'down':
+                echo 0; break;
+            case 'loss':
+                echo 2; break;
+            case 'delay':
+                echo 3; break;<?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>3.0</version>
     <date>2016-09-13T17:39:41Z</date>
     <groups>
         <group>
-            <name>LEO</name>
+            <name> PFSENSE_ZABBIX</name>
         </group>
         <group>
             <name>Templates</name>
@@ -12,12 +57,12 @@
     </groups>
     <templates>
         <template>
-            <template>LEO - PFSENSE - Monitor Gateway Status</template>
-            <name>LEO - PFSENSE - Monitor Gateway Status</name>
+            <template> PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status</template>
+            <name> PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status</name>
             <description/>
             <groups>
                 <group>
-                    <name>LEO</name>
+                    <name> PFSENSE_ZABBIX</name>
                 </group>
                 <group>
                     <name>Templates</name>
@@ -286,7 +331,7 @@
                     </item_prototypes>
                     <trigger_prototypes>
                         <trigger_prototype>
-                            <expression>{LEO - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},delay].last(#3)}&gt;100</expression>
+                            <expression>{ PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},delay].last(#3)}&gt;100</expression>
                             <name>Gateway {#NAME}: Latencia alta.</name>
                             <url/>
                             <status>0</status>
@@ -296,7 +341,7 @@
                             <dependencies/>
                         </trigger_prototype>
                         <trigger_prototype>
-                            <expression>{LEO - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},status].last(#3)}=0</expression>
+                            <expression>{ PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},status].last(#3)}=0</expression>
                             <name>Gateway  {#NAME}: Offline</name>
                             <url/>
                             <status>0</status>
@@ -306,7 +351,7 @@
                             <dependencies/>
                         </trigger_prototype>
                         <trigger_prototype>
-                            <expression>{LEO - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},status].last()}=0</expression>
+                            <expression>{ PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status:gateway[status,{#NAME},status].last()}=0</expression>
                             <name>Gateway {#NAME}: Status Offline</name>
                             <url/>
                             <status>0</status>
@@ -343,7 +388,7 @@
                                     <calc_fnc>2</calc_fnc>
                                     <type>0</type>
                                     <item>
-                                        <host>LEO - PFSENSE - Monitor Gateway Status</host>
+                                        <host> PFSENSE_ZABBIX - PFSENSE - Monitor Gateway Status</host>
                                         <key>gateway[status,{#NAME},status]</key>
                                     </item>
                                 </graph_item>
@@ -359,3 +404,20 @@
         </template>
     </templates>
 </zabbix_export>
+
+            default:
+                echo 4; break;
+        }
+    } else {
+        echo 'ZBX_NOTSUPPORTED';
+    }
+}
+
+// Dispatcher
+if (isset($argv[1]) && $argv[1] == 'discovery') {
+    echo json_encode(['data' => getGateways()], JSON_UNESCAPED_UNICODE);
+} elseif (isset($argv[1]) && isset($argv[2])) {
+    getStatusGateways($argv[1], $argv[2]);
+} else {
+    echo 'ZBX_NOTSUPPORTED';
+}
